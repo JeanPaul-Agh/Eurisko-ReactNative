@@ -21,9 +21,10 @@ import { RootStackParamList } from '../../navigation';
 import { useTheme } from '../../hooks/useTheme';
 import CustomText from '../../components/CustomText';
 
+// Navigation prop type for the Login screen
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
-// Form validation schema using Zod
+// Validation schema using Zod
 const schema = z.object({
   username: z.string()
     .min(1, 'Username is required')
@@ -38,30 +39,29 @@ type FormData = z.infer<typeof schema>;
 
 const Login = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const { toggleLogin, toggleDarkMode, darkMode } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const theme = useTheme();
+  const { toggleLogin, toggleDarkMode, darkMode } = useAuth(); 
+  const [showPassword, setShowPassword] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false); // Prevents multiple submissions
+  const theme = useTheme(); 
 
+  // Initialize form with validation
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  // Hardcoded credentials for login validation
+  // Dummy credentials for now
   const predefinedCredentials = {
     username: 'eurisko',
     password: 'academy2025',
   };
 
-  // Form submit handler
+  // Handle form submission
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      
       if (data.username === predefinedCredentials.username && data.password === predefinedCredentials.password) {
-        toggleLogin(true); // Update auth state
+        toggleLogin(true); 
         navigation.navigate('ProductList'); 
       } else {
         Alert.alert('Invalid Credentials', 'Please check your username and password and try again.');
@@ -94,19 +94,17 @@ const Login = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          {/* App logo container */}
-          <View style={[styles.logoContainer, { backgroundColor: theme.colors.card }]}>
-            <Image
-              source={require('../../assets/img/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          </View>
+          {/* App logo */}
+          <Image
+            source={require('../../assets/img/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
-          {/* Login form card */}
+          {/* Login form container */}
           <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
             
-            {/* Username input */}
+            {/* Username input field */}
             <View style={styles.inputContainer}>
               <Controller
                 control={control}
@@ -126,11 +124,10 @@ const Login = () => {
                   />
                 )}
               />
-              {/* Display username validation error */}
               {errors.username && <CustomText style={[styles.error, { color: theme.colors.error }]}>{errors.username.message}</CustomText>}
             </View>
 
-            {/* Password input with toggle visibility */}
+            {/* Password input field with toggle */}
             <View style={styles.inputContainer}>
               <Controller
                 control={control}
@@ -149,7 +146,6 @@ const Login = () => {
                       autoCapitalize="none"
                       placeholderTextColor={theme.colors.placeholder}
                     />
-                    {/* Eye icon to show/hide password */}
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
                       style={styles.eyeIcon}
@@ -163,11 +159,10 @@ const Login = () => {
                   </View>
                 )}
               />
-              {/* Display password validation error */}
               {errors.password && <CustomText style={[styles.error, { color: theme.colors.error }]}>{errors.password.message}</CustomText>}
             </View>
 
-            {/* Login button */}
+            {/* Submit button */}
             <TouchableOpacity
               style={[
                 styles.button, 
@@ -183,7 +178,7 @@ const Login = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Navigation to Signup screen */}
+          {/* Footer with navigation to signup */}
           <View style={styles.footer}>
             <CustomText style={[styles.footerText, { color: theme.colors.footerText }]}>New here?</CustomText>
             <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -195,6 +190,7 @@ const Login = () => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -216,25 +212,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: 'center',
   },
-  logoContainer: {
+  logo: {
     alignSelf: 'center',
-    marginBottom: 40,
     width: 90,
     height: 90,
-    borderRadius: 45,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  logo: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain', 
+    marginBottom: 40,
+    resizeMode: 'contain',
   },
   formCard: {
     borderRadius: 16,
