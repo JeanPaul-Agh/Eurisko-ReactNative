@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect } from 'react';
-import { FlatList, Text, View, Image, StyleSheet, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import { FlatList, View, Image, StyleSheet, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomText from '../../components/CustomText';
 
 const ProductList = ({ navigation }: any) => {
-  const products = require('../../data/Products.json').data;
-  const theme = useTheme();
+  // Load product data from JSON
+  const theme = useTheme(); 
+  const products = require('../../data/Products.json').data; 
+
   const { toggleLogin } = useAuth();
 
+  // Confirm logout and navigate to Login screen
   const handleLogout = () => {
     Alert.alert(
       'Logout',
@@ -31,6 +35,7 @@ const ProductList = ({ navigation }: any) => {
     );
   };
 
+  // Confirm app exit on Android back press
   const handleBackPress = useCallback(() => {
     Alert.alert(
       'Exit App',
@@ -44,13 +49,14 @@ const ProductList = ({ navigation }: any) => {
     return true;
   }, []);
 
+  // logout button in header
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleLogout} style={styles.logoutContainer} activeOpacity={0.8}>
           <View style={[styles.logoutButton, { backgroundColor: theme.colors.logoutButton }]}>
             <Icon name="logout" size={20} color={theme.colors.text} style={styles.logoutIcon} />
-            <Text style={[styles.logoutText, { color: theme.colors.text }]}>Logout</Text>
+            <CustomText style={[styles.logoutText, { color: theme.colors.text }]}>Logout</CustomText>
           </View>
         </TouchableOpacity>
       ),
@@ -58,15 +64,12 @@ const ProductList = ({ navigation }: any) => {
   }, [navigation, theme]);
 
   useEffect(() => {
-    // Add when screen focuses
+    // Handle back press when screen is active
     const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-    
-    return () => {
-      // Remove when screen unfocuses or unmounts
-      backHandler.remove();
-    };
+    return () => backHandler.remove(); 
   }, [handleBackPress]);
 
+  // Render each product item
   const renderItem = ({ item }: any) => (
     <TouchableOpacity
       style={[styles.productContainer, { 
@@ -77,9 +80,9 @@ const ProductList = ({ navigation }: any) => {
     >
       <Image source={{ uri: item.images[0].url }} style={styles.productImage} />
       <View style={styles.productDetails}>
-        <Text style={[styles.productTitle, { color: theme.colors.text }]}>{item.title}</Text>
-        <Text style={[styles.productDescription, { color: theme.colors.text }]}>{item.description}</Text>
-        <Text style={[styles.productPrice, { color: theme.colors.text }]}>${item.price}</Text>
+        <CustomText style={[styles.productTitle, { color: theme.colors.text }]}>{item.title}</CustomText>
+        <CustomText style={[styles.productDescription, { color: theme.colors.text }]}>{item.description}</CustomText>
+        <CustomText style={[styles.productPrice, { color: theme.colors.text }]}>${item.price}</CustomText>
       </View>
     </TouchableOpacity>
   );

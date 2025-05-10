@@ -1,21 +1,24 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Share, Alert, BackHandler } from 'react-native';
+import { View, Image, StyleSheet, ScrollView, TouchableOpacity, Share, Alert, BackHandler } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import CustomText from '../../components/CustomText';
 
 const ProductDetails = ({ route, navigation }: any) => {
-  const { product } = route.params;
+  const { product } = route.params; 
   const theme = useTheme();
 
   useEffect(() => {
-    // Ensure normal back behavior by removing any existing back handlers
+    // Handle Android back button to go back to previous screen
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       navigation.goBack();
       return true;
     });
 
+    
     return () => backHandler.remove();
   }, [navigation]);
 
+  // Share product details using native sharing options
   const handleShare = async () => {
     try {
       await Share.share({
@@ -26,17 +29,27 @@ const ProductDetails = ({ route, navigation }: any) => {
     }
   };
 
-  const handleAddToCart = () => {
-    Alert.alert('Added to Cart', `${product.title} added to cart!`);
-  };
-
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Product image */}
       <Image source={{ uri: product.images[0].url }} style={styles.productImage} />
-      <Text style={[styles.productTitle, { color: theme.colors.text }]}>{product.title}</Text>
-      <Text style={[styles.productDescription, { color: theme.colors.text }]}>{product.description}</Text>
-      <Text style={[styles.productPrice, { color: theme.colors.text }]}>${product.price}</Text>
-      
+
+      {/* Product title */}
+      <CustomText style={[styles.productTitle, { color: theme.colors.text }]}>
+        {product.title}
+      </CustomText>
+
+      {/* Product description */}
+      <CustomText style={[styles.productDescription, { color: theme.colors.text }]}>
+        {product.description}
+      </CustomText>
+
+      {/* Product price */}
+      <CustomText style={[styles.productPrice, { color: theme.colors.text }]}>
+        ${product.price}
+      </CustomText>
+
+      {/* Buttons for sharing and adding to cart */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           style={[
@@ -49,7 +62,9 @@ const ProductDetails = ({ route, navigation }: any) => {
           ]}
           onPress={handleShare}
         >
-          <Text style={[styles.buttonText, { color: theme.colors.buttonText }]}>Share</Text>
+          <CustomText style={[styles.buttonText, { color: theme.colors.buttonText }]}>
+            Share
+          </CustomText>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -60,14 +75,16 @@ const ProductDetails = ({ route, navigation }: any) => {
               marginLeft: 10
             }
           ]}
-          onPress={handleAddToCart}
         >
-          <Text style={[styles.buttonText, { color: theme.colors.buttonText }]}>Add to Cart</Text>
+          <CustomText style={[styles.buttonText, { color: theme.colors.buttonText }]}>
+            Add to Cart
+          </CustomText>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +108,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     lineHeight: 24,
-    fontFamily: 'Montserrat-Regular',
+
   },
   productPrice: {
     fontSize: 22,

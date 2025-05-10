@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -9,16 +8,27 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+
+// React Hook Form & Zod for validation
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+// Persist data locally
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Navigation types
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { useTheme } from '../../hooks/useTheme';
 
+// Custom theming and components
+import { useTheme } from '../../hooks/useTheme';
+import CustomText from '../../components/CustomText';
+
+// Define props type for navigation
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
+// Validation schema using Zod
 const schema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
   email: z.string().email({ message: 'Invalid email format' }),
@@ -31,24 +41,28 @@ const schema = z.object({
     .regex(/^\d{8}$/, 'Phone must be 8 digits (excluding country code)'),
 });
 
+// Type for form data inferred from schema
 type FormData = z.infer<typeof schema>;
 
 const SignupScreen: React.FC<Props> = ({ navigation }) => {
+  // useForm hook setup with Zod schema as resolver
   const {
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
+    control, 
+    handleSubmit, 
+    formState: { errors, isSubmitting }, 
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const theme = useTheme();
+  const theme = useTheme(); 
 
+  // Function to handle form submission
   const onSubmit = async (data: FormData) => {
     try {
+      // Store user data in AsyncStorage
       await AsyncStorage.setItem('user', JSON.stringify(data));
       Alert.alert('Success', 'Account created! Please verify your email');
-      navigation.navigate('Verification');
+      navigation.navigate('Verification'); 
     } catch (error) {
       Alert.alert('Error', 'Failed to create account');
     }
@@ -61,7 +75,8 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
     >
       <View style={styles.content}>
         <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
-          {/* Name */}
+
+          {/* Full Name Field */}
           <View style={styles.inputContainer}>
             <Controller
               control={control}
@@ -80,14 +95,15 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
                 />
               )}
             />
+            {/* Error message for name */}
             {errors.name && (
-              <Text style={[styles.error, { color: theme.colors.error }]}>
+              <CustomText style={[styles.error, { color: theme.colors.error }]}>
                 {errors.name.message}
-              </Text>
+              </CustomText>
             )}
           </View>
 
-          {/* Email */}
+          {/* Email Field */}
           <View style={styles.inputContainer}>
             <Controller
               control={control}
@@ -108,14 +124,15 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
                 />
               )}
             />
+            {/* Error message for email */}
             {errors.email && (
-              <Text style={[styles.error, { color: theme.colors.error }]}>
+              <CustomText style={[styles.error, { color: theme.colors.error }]}>
                 {errors.email.message}
-              </Text>
+              </CustomText>
             )}
           </View>
 
-          {/* Password */}
+          {/* Password Field */}
           <View style={styles.inputContainer}>
             <Controller
               control={control}
@@ -130,22 +147,23 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
                   }]}
                   value={value}
                   onChangeText={onChange}
-                  secureTextEntry
+                  secureTextEntry // Hides text for passwords
                   placeholderTextColor={theme.colors.placeholder}
                 />
               )}
             />
+            {/* Error message for password */}
             {errors.password && (
-              <Text style={[styles.error, { color: theme.colors.error }]}>
+              <CustomText style={[styles.error, { color: theme.colors.error }]}>
                 {errors.password.message}
-              </Text>
+              </CustomText>
             )}
           </View>
 
-          {/* Country Code + Phone Number */}
+          {/* Country Code and Phone Number */}
           <View style={styles.inputContainer}>
             <View style={styles.phoneRow}>
-              {/* Country Code */}
+              {/* Country Code Input */}
               <Controller
                 control={control}
                 name="countryCode"
@@ -165,7 +183,8 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
                   />
                 )}
               />
-              {/* Phone Number */}
+
+              {/* Phone Number Input */}
               <Controller
                 control={control}
                 name="phone"
@@ -186,14 +205,16 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
                 )}
               />
             </View>
+
+            {/* Error message for phone or country code */}
             {(errors.countryCode || errors.phone) && (
-              <Text style={[styles.error, { color: theme.colors.error }]}>
+              <CustomText style={[styles.error, { color: theme.colors.error }]}>
                 {errors.countryCode?.message || errors.phone?.message}
-              </Text>
+              </CustomText>
             )}
           </View>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <TouchableOpacity
             style={[
               styles.button,
@@ -203,24 +224,26 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
           >
-            <Text style={[styles.buttonText, { color: theme.colors.buttonText }]}>
+            <CustomText style={[styles.buttonText, { color: theme.colors.buttonText }]}>
               {isSubmitting ? 'Creating Account...' : 'Create Account'}
-            </Text>
+            </CustomText>
           </TouchableOpacity>
         </View>
 
+        {/* Footer with link to login */}
         <View style={styles.footer}>
-          <Text style={[styles.footerText, { color: theme.colors.footerText }]}>
+          <CustomText style={[styles.footerText, { color: theme.colors.footerText }]}>
             Already have an account?
-          </Text>
+          </CustomText>
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={[styles.footerLink, { color: theme.colors.footerLink }]}> Sign In</Text>
+            <CustomText style={[styles.footerLink, { color: theme.colors.footerLink }]}> Sign In</CustomText>
           </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
