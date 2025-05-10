@@ -62,7 +62,7 @@ const Login = () => {
 
       if (data.username === predefinedCredentials.username && data.password === predefinedCredentials.password) {
         toggleLogin(true); // Update auth state
-        navigation.navigate('ProductList'); // Redirect to ProductList
+        navigation.navigate('ProductList'); 
       } else {
         Alert.alert('Invalid Credentials', 'Please check your username and password and try again.');
       }
