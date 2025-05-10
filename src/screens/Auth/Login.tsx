@@ -25,8 +25,13 @@ type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'
 
 // Form validation schema using Zod
 const schema = z.object({
-  username: z.string().min(1, { message: 'Username is required' }),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  username: z.string()
+    .min(1, 'Username is required')
+    .transform(val => val.trim()), 
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(20, 'Password must be at most 20 characters')
+    .transform(val => val.trim()),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -219,6 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden', 
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -226,8 +232,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain', 
   },
   formCard: {
     borderRadius: 16,
