@@ -34,7 +34,7 @@
       </activity>
       <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyDOquRI4oh13qTRKLlhyb5ZK7LV0Qaxj_c"/>
+        android:value=""/>
       
       <service 
         android:name="com.reactnativecommunity.geolocation.GeolocationService"
